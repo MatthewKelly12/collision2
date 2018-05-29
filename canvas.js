@@ -14,10 +14,10 @@ const mouse = {
 const colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66']
 
 // Event Listeners
-addEventListener('mousemove', event => {
-    mouse.x = event.clientX
-    mouse.y = event.clientY
-})
+// addEventListener('mousemove', event => {
+//     mouse.x = event.clientX
+//     mouse.y = event.clientY
+// })
 
 addEventListener('resize', () => {
     canvas.width = innerWidth
@@ -48,10 +48,27 @@ function Particle(x, y, radius, color) {
     this.y = y
     this.radius = radius
     this.color = color
-
-    this.update = function() {
-    this.draw()
+    this.velocity = {
+        x: Math.random() - 0.5,
+        y: Math.random() - 0.5
     }
+
+    this.update = particles => {
+      this.draw()
+        for (let i = 0; i < particles.length; i++) {
+          if (this === particles[i]) continue;
+
+            if (distance(this.x, this.y, particles[i].x, particles[i].y) - this.radius * 2 < 0)  {
+                console.log("has collided")
+
+            }
+
+        }
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
+
+    }
+
 
     this.draw = function() {
     c.beginPath()
@@ -68,16 +85,17 @@ function init() {
     particles = [];
 
     for (let i = 0; i < 4; i++) {
-        let x = Math.random() * innerWidth;
-        let y = Math.random() * innerHeight;
-        const radius = 100;
+        const radius = 80;
+        let x = randomIntFromRange(radius, canvas.width - radius);
+        let y = randomIntFromRange(radius, canvas.height - radius);
+
         const color = "blue";
 
         if (i !== 0) {
             for (let j = 0; j < particles.length; j++) {
                 if (distance(x, y, particles[j].x, particles[j].y) - radius * 2 < 0)  {
-                     x = Math.random() * innerWidth;
-                     y = Math.random() * innerHeight;
+                     x = randomIntFromRange(radius, canvas.width - radius);
+                     y = randomIntFromRange(radius, canvas.height - radius);
 
                      j = -1;
                 }
@@ -86,7 +104,7 @@ function init() {
 
         particles.push(new Particle(x, y, radius, color))
     }
-    console.log(particles)
+    // console.log(particles)
 }
 
 
@@ -97,8 +115,8 @@ function animate() {
 
     particles.forEach(
         function (particle) {
-            console.log(particle)
-            particle.update();
+            // console.log(particle)
+            particle.update(particles);
 
         }
     )
