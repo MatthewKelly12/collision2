@@ -48,9 +48,11 @@ function Particle(x, y, radius, color) {
     this.y = y
     this.radius = radius
     this.color = color
+    this.mass = 1;
+
     this.velocity = {
-        x: Math.random() - 0.5,
-        y: Math.random() - 0.5
+        x: Math.random() - 0.5 * 5,
+        y: Math.random() - 0.5 * 5
     }
 
     this.update = particles => {
@@ -59,14 +61,19 @@ function Particle(x, y, radius, color) {
           if (this === particles[i]) continue;
 
             if (distance(this.x, this.y, particles[i].x, particles[i].y) - this.radius * 2 < 0)  {
+                resolveCollision(this, particles[i])
                 console.log("has collided")
-
             }
-
         }
+        if (this.x - this.radius <= 0 || this.x + this.radius >= innerWidth) {
+            this.velocity.x = -this.velocity.x;
+        }
+        if (this.y - this.radius <= 0 || this.y + this.radius >= innerHeight) {
+            this.velocity.y = -this.velocity.y;
+        }
+
         this.x += this.velocity.x;
         this.y += this.velocity.y;
-
     }
 
 
@@ -84,8 +91,8 @@ let particles;
 function init() {
     particles = [];
 
-    for (let i = 0; i < 4; i++) {
-        const radius = 80;
+    for (let i = 0; i < 100; i++) {
+        const radius = 15;
         let x = randomIntFromRange(radius, canvas.width - radius);
         let y = randomIntFromRange(radius, canvas.height - radius);
 
