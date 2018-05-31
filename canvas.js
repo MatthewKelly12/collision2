@@ -11,13 +11,13 @@ const mouse = {
     y: innerHeight / 2
 }
 
-const colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66']
+const colors = ['#FFA55E', '#E822DD', '#6B96FF', '#63E896','#FFF45E']
 
 // Event Listeners
-// addEventListener('mousemove', event => {
-//     mouse.x = event.clientX
-//     mouse.y = event.clientY
-// })
+addEventListener('mousemove', event => {
+    mouse.x = event.clientX
+    mouse.y = event.clientY
+})
 
 addEventListener('resize', () => {
     canvas.width = innerWidth
@@ -47,8 +47,9 @@ function Particle(x, y, radius, color) {
     this.x = x
     this.y = y
     this.radius = radius
-    this.color = color
+    this.color = randomColor(colors);
     this.mass = 1;
+    this.opacity = 0;
 
     this.velocity = {
         x: Math.random() - 0.5 * 5,
@@ -72,6 +73,15 @@ function Particle(x, y, radius, color) {
             this.velocity.y = -this.velocity.y;
         }
 
+        // Mouse Detection
+        if (distance(mouse.x, mouse.y, this.x, this.y ) < 120 && this.opacity < .2) {
+            this.opacity += .02;
+            console.log("mouse")
+        } else if (this.opacity > 0) {
+            this.opacity -= .02;
+            this.opacity = Math.max(0, this.opacity)
+        }
+
         this.x += this.velocity.x;
         this.y += this.velocity.y;
     }
@@ -80,6 +90,11 @@ function Particle(x, y, radius, color) {
     this.draw = function() {
     c.beginPath()
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+    c.save();
+    c.globalAlpha = this.opacity;
+    c.fillStyle = this.color;
+    c.fill();
+    c.restore();
     c.strokeStyle = this.color
     c.stroke()
     c.closePath()
@@ -91,7 +106,7 @@ let particles;
 function init() {
     particles = [];
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 200; i++) {
         const radius = 15;
         let x = randomIntFromRange(radius, canvas.width - radius);
         let y = randomIntFromRange(radius, canvas.height - radius);
